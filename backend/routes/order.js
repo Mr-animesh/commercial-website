@@ -9,7 +9,7 @@ const { JWT_SECRET } = require("../config");
 const router = express.Router();
 
 //see all orders
-router.get("/:userId", authMiddleware, async(req, res) => {
+router.get("/:userId", async(req, res) => {
 
     const orders = await Order.find({
         userId : req.params.userId
@@ -25,7 +25,7 @@ router.get("/:userId", authMiddleware, async(req, res) => {
 })
 
 //place an order
-router.post("/user/:userId/product/:productId", authMiddleware, async(req, res) => {
+router.post("/user/:userId/product/:productId",  async(req, res) => {
     const {userId, productId} = req.params;
     const status = req.body.status;
 
@@ -42,7 +42,7 @@ router.post("/user/:userId/product/:productId", authMiddleware, async(req, res) 
 })
 
 //get specific order
-router.get("/:orderId", authMiddleware,  async(req, res) => {
+router.get("/:orderId",  async(req, res) => {
     const orderId = req.params;
     
     const order = await Order.findOne({
@@ -54,7 +54,7 @@ router.get("/:orderId", authMiddleware,  async(req, res) => {
 })
 
 //update order status
-router.post("/update/:orderId", adminMiddleware, async(req, res) => {
+router.post("/update/:orderId", async(req, res) => {
     const orderId = req.params.orderId
     await Product.updateOne(req.body, {
         orderId

@@ -47,6 +47,12 @@ router.post("/signup", async (req, res)=>{
 
     const dbUser = await User.create(body);
     const userId = dbUser._id;
+
+    //to give balance to user
+    await User.updateOne({_id: userId}, 
+        {$set: {balance: 1 + Math.random()*1000}}
+    )
+    
     
     const token = jwt.sign({
         userId
@@ -89,7 +95,7 @@ router.post("/signin", async (req, res) => {
 })    
 
 //update user 
-router.put("/", authMiddleware, async(req, res)=>{
+router.put("/", async(req, res)=>{
     const {success} = updateSchema.safeParse(req.body);
     if(!success) {
         res.status(411).json({
@@ -106,7 +112,7 @@ router.put("/", authMiddleware, async(req, res)=>{
 })
 
 //get all users
-router.get("/bulk", adminMiddleware, async(req, res) => {
+router.get("/bulk", async(req, res) => {
     const filter = req.query.filter || "";  
 
     const users = await User.find({
@@ -126,6 +132,7 @@ router.get("/bulk", adminMiddleware, async(req, res) => {
             firstName: user.firstName,
             lastName: user.lastName,
             _id: user._id,
+            balance: user.balance,
             isAdmin: user.isAdmin
         }))
     })

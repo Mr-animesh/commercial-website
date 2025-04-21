@@ -43,8 +43,14 @@ router.get("/categorie",  async(req, res) => {
     const categoryName = req.body.categoryName
 
     const category = await Category.findOne({ categoryName: categoryName })
-    const prdCategory = await PrdCategory.find({ categoryId: category._id })
-    const products = await Product.find({ _id: prdCategory.productId })
+    const prdCategory = await PrdCategory.find({ categoryId: category._id }) //array
+    const productIds = prdCategory.map(p => p.productId)
+
+  // Query for any document whose _id is in that list:
+    const products = await Product.find({
+        _id: { $in: productIds }
+    });
+
 
     res.json({
         product: products.map(product => ({
@@ -125,9 +131,10 @@ router.get("/:id",  async(req, res) => {
 //update a product in db by id
 router.put("/add/:id", async(req, res) => {
     const productId = req.params.id
-    const product = await Product.updateOne(req.body, {
+    console.log(productId)
+    const product = await Product.updateOne( {
         _id: productId
-    })
+    }, req.body)
 
     res.json({
         msg: "Update Product",
