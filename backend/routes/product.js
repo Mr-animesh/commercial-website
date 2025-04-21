@@ -30,12 +30,87 @@ router.get("/bulk",  async(req, res) => {
     res.json({
         product: products.map(product => ({
             productName: product.productName,
+            categoryName: product.categoryName,
             price: product.price,
             stock: product.stock,
             booked: product.booked
         }))
     })
 })
+
+// get all product which are from same category frm db
+router.get("/categorie",  async(req, res) => {
+    const categoryName = req.body.categoryName
+
+    const category = await Category.findOne({ categoryName: categoryName })
+    const prdCategory = await PrdCategory.find({ categoryId: category._id })
+    const products = await Product.find({ _id: prdCategory.productId })
+
+    res.json({
+        product: products.map(product => ({
+            productName: product.productName,
+            categoryName: product.categoryName,
+            stock: product.stock,
+            price: product.price,
+            booked: product.booked,
+            _id: product._id
+        }))
+    })
+})
+
+//add a prduct in db
+router.post("/add",  async(req, res) => {
+    try{    const body = req.body;
+        const {success} = productSchema.safeParse(req.body)
+        if(!success) {
+            return res.status(404).json({
+                msg: "Incorrect Product"
+            })
+        }
+    
+        const product = await Product.findOne({
+            productName: body.productName
+        });
+    
+        if(product?._id) {
+            return res.json({
+                msg: "product already exist"
+            })
+        }
+        const dbProduct = await Product.create(body);
+        const productId = dbProduct._id;
+    
+        // updating another table in same request
+        const categoryName = dbProduct.categoryName;
+        let category = await Category.findOne({
+            categoryName: body.categoryName
+        })
+        console.log(category)
+        let categoryId;
+        if(category?._id ){
+            categoryId = category._id;
+        }else{
+            const newCategory = await Category.create({categoryName});
+            categoryId = newCategory._id;
+        }
+        await PrdCategory.create({
+            productId,
+            categoryId
+        })
+        res.status(201).json({
+            success: true,
+            productId,
+            categoryId
+        })}
+        catch(e) {
+            console.error("Error adding product", e);
+            res.status(500).json({
+                success: false,
+                msg: "Failed to add product",
+                e: e.msg
+            })
+        }
+    })
 
 //to get a particular prd acc to id from db
 router.get("/:id",  async(req, res) => {
@@ -47,76 +122,20 @@ router.get("/:id",  async(req, res) => {
 })
 
 
-//add a prduct in db
-router.post("/add",  async(req, res) => {
-    const body = req.body;
-    const {success} = productSchema.safeParse(req.body)
-    if(!success) {
-        return res.status(404).json({
-            msg: "Incorrect Product"
-        })
-    }
-
-    const product = await Product.findOne({
-        productName: body.productName
-    });
-
-    if(product._id) {
-        return res.json({
-            msg: "product already exist"
-        })
-    }
-    const dbProduct = await Product.create(body);
-    const productId = dbProduct._id;
-
-    // updating another table in same request
-    const category = await Category.findOne({
-        categoryName: body.categoryName
-    })
-    const categoryName = dbProduct.categoryName;
-    if(category._id ){
-        const dbCategory = category;
-    }else{
-        const dbCategory = await Category.create({categoryName});
-    }
-    const categoryId = dbCategory._id;
-    await PrdCategory.create({
-        productId,
-        categoryId
-    })
-
-    res.json({
-        productId,
-        categoryId
-    })
-})
-
-
 //update a product in db by id
-router.put("/add/:id", adminMiddleware, async(req, res) => {
+router.put("/add/:id", async(req, res) => {
     const productId = req.params.id
-    await Product.updateOne(req.body, {
-        productId
+    const product = await Product.updateOne(req.body, {
+        _id: productId
     })
 
     res.json({
-        msg: "Update Product"
+        msg: "Update Product",
+        product: product
     })
 })
 
 
-// get all product which are from same category frm db
-router.get("/categories",  async(req, res) => {
-    const categoryName = req.body.categoryName
-    const products = await PrdCategory.find({categoryName})
-    res.json({
-        product: products.map(product => ({
-            productName: product.productName,
-            stock: product.stock,
-            price: product.price,
-            _id: product._id
-        }))
-    })
-})
+
 
 module.exports = router;
