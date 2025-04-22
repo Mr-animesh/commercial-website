@@ -8,18 +8,43 @@ const { JWT_SECRET } = require("../config");
 
 const router = express.Router();
 
-//see all orders
-router.get("/:userId", async(req, res) => {
+const orderSchema = z.object({
+    orderId: z.string().optional(),
+    userId: z.string(),
+    status: z.string().optional()
+})
 
+//update order status
+router.post("/update/", async(req, res) => {
+    const orderId = req.body.orderId;
+    await Order.updateOne( {
+        _id: orderId
+    },
+    {$set:{status: req.body.status}})
+
+    res.json({
+        msg: "Update Product"
+    })
+})
+
+//see all orders
+router.get("/cart", async(req, res) => {
+    const body = req.body;
+    const {success} = orderSchema.safeParse(req.body);
+    if(!success) {
+        res.json({
+            msg:"wrong body"
+        })
+    }
     const orders = await Order.find({
-        userId : req.params.userId
+        userId : body.userId
     })
 
     res.json({
         order: orders.map(order => ({
             orderId: order._id,
             productId: order.porductId,
-            categoryName: order.categoryName
+            status: order.status
         }))
     })
 })
@@ -42,26 +67,21 @@ router.post("/user/:userId/product/:productId",  async(req, res) => {
 })
 
 //get specific order
-router.get("/:orderId",  async(req, res) => {
-    const orderId = req.params;
-    
+router.get("/one",  async(req, res) => {
+    const orderId = req.body.orderId;
+    const {success} = orderSchema.safeParse(req.body);
+    if(!success){
+        return res.json({
+            msg: "wrong body"
+        })
+    }
     const order = await Order.findOne({
         _id: orderId
     });
+    console.log(order);
     res.json({
         order: order
     })
 })
 
-//update order status
-router.post("/update/:orderId", async(req, res) => {
-    const orderId = req.params.orderId
-    await Product.updateOne(req.body, {
-        orderId
-    })
-
-    res.json({
-        msg: "Update Product"
-    })
-})
 module.exports = router;

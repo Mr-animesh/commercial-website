@@ -95,7 +95,8 @@ router.post("/signin", async (req, res) => {
 })    
 
 //update user 
-router.put("/", async(req, res)=>{
+router.put("/",authMiddleware, async(req, res)=>{
+    const {field, value} = req.body;
     const {success} = updateSchema.safeParse(req.body);
     if(!success) {
         res.status(411).json({
@@ -103,9 +104,9 @@ router.put("/", async(req, res)=>{
         })
     }
     // console.log(req.body)
-    await User.updateOne(req.body,{
+    await User.updateOne({
         id: req.userId
-    })
+    }, {$set:{[field]: value}})
     res.json({
         msg: "Update Info"
     })

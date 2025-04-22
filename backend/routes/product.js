@@ -29,6 +29,7 @@ router.get("/bulk",  async(req, res) => {
     })
     res.json({
         product: products.map(product => ({
+            _id: product._id,
             productName: product.productName,
             categoryName: product.categoryName,
             price: product.price,
