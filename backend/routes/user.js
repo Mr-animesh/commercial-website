@@ -29,7 +29,6 @@ const updateSchema = z.object({
 //register a new user
 router.post("/signup", async (req, res)=>{
     const body = req.body;
-    console.log(body)
     const {success} = signupSchema.safeParse(req.body);
     if(!success) {
         return res.json({
@@ -47,6 +46,7 @@ router.post("/signup", async (req, res)=>{
 
     const dbUser = await User.create(body);
     const userId = dbUser._id;
+    const isAdmin = dbUser.isAdmin;
 
     //to give balance to user
     await User.updateOne({_id: userId}, 
@@ -55,7 +55,8 @@ router.post("/signup", async (req, res)=>{
     
     
     const token = jwt.sign({
-        userId
+        userId,
+        isAdmin
     }, JWT_SECRET);
 
     res.json({
@@ -81,7 +82,8 @@ router.post("/signin", async (req, res) => {
 
     if(user){
         const token = jwt.sign({
-            userId: user._id
+            userId: user._id,
+            isAdmin: user.isAdmin
         }, JWT_SECRET);
         res.json({
             token: token
@@ -105,15 +107,15 @@ router.put("/",authMiddleware, async(req, res)=>{
     }
     // console.log(req.body)
     await User.updateOne({
-        id: req.userId
-    }, {$set:{[field]: value}})
+        _id: req.userId
+    }, req.body)
     res.json({
         msg: "Update Info"
     })
 })
 
 //get all users
-router.get("/bulk", async(req, res) => {
+router.get("/bulk",adminMiddleware, async(req, res) => {
     const filter = req.query.filter || "";  
 
     const users = await User.find({

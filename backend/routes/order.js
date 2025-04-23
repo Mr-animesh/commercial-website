@@ -9,26 +9,11 @@ const { JWT_SECRET } = require("../config");
 const router = express.Router();
 
 const orderSchema = z.object({
-    orderId: z.string().optional(),
-    userId: z.string(),
     status: z.string().optional()
 })
 
-//update order status
-router.post("/update/", async(req, res) => {
-    const orderId = req.body.orderId;
-    await Order.updateOne( {
-        _id: orderId
-    },
-    {$set:{status: req.body.status}})
-
-    res.json({
-        msg: "Update Product"
-    })
-})
-
 //see all orders
-router.get("/cart", async(req, res) => {
+router.get("/cart",authMiddleware, async(req, res) => {
     const body = req.body;
     const {success} = orderSchema.safeParse(req.body);
     if(!success) {
@@ -37,7 +22,7 @@ router.get("/cart", async(req, res) => {
         })
     }
     const orders = await Order.find({
-        userId : body.userId
+        userId : req.userId
     })
 
     res.json({
@@ -50,9 +35,10 @@ router.get("/cart", async(req, res) => {
 })
 
 //place an order
-router.post("/user/:userId/product/:productId",  async(req, res) => {
-    const {userId, productId} = req.params;
+router.post("/place/:productId",authMiddleware,  async(req, res) => {
+    const {productId} = req.params;
     const status = req.body.status;
+    const userId = req.userId;
 
     const dbOrder = await Order.create({
         userId: userId,
@@ -66,9 +52,22 @@ router.post("/user/:userId/product/:productId",  async(req, res) => {
     })
 })
 
+//update order status
+router.post("/update/:orderId",adminMiddleware, async(req, res) => {
+    const {orderId} = req.params;
+    await Order.updateOne( {
+        _id: orderId
+    },
+    {$set:{status: req.body.status}})
+
+    res.json({
+        msg: "Update Product"
+    })
+})
+
 //get specific order
-router.get("/one",  async(req, res) => {
-    const orderId = req.body.orderId;
+router.get("/:orderId", authMiddleware,  async(req, res) => {
+    const {orderId} = req.params;
     const {success} = orderSchema.safeParse(req.body);
     if(!success){
         return res.json({

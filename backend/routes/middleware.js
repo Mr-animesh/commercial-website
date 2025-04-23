@@ -24,25 +24,19 @@ const authMiddleware = (req, res, next) => {
 
 
 const adminMiddleware = (req, res, next) => {
-    const authHeader = req.headers.authourization;
-    const isAdmin = req.body.isAdmin;
+    const authHeader = req.headers.authorization;
 
     if(!authHeader || !authHeader.startsWith('Bearer')){
-        return res.status(403).json({})
+        return res.status(404).json({})
     }
 
     const token = authHeader.split(' ')[1];
 
     try{
         const decoded = jwt.verify(token, JWT_SECRET);
-        if(decoded.userId){
+        if(decoded.userId && decoded.isAdmin){
             req.userId = decoded.userId;
-            if(isAdmin) {
-                next();
-            }
-            else {
-                return res.status(403).json({})
-            }
+            next();
         }
     }catch (err) {
         return res.status(403).json({})

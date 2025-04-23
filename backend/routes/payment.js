@@ -20,7 +20,7 @@ router.post("/checkout", async(req, res) => {
 })
 
 //for a api which handle money transfer
-router.post("/webhook", async(req, res) => {
+router.post("/webhook", authMiddleware, async(req, res) => {
 
     const {amount , to} = req.body;
     const {success} = amountSchema.safeParse(req.body);

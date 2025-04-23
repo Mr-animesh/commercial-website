@@ -17,7 +17,7 @@ const productSchema = z.object({
 })
 
 //to get all products from db
-router.get("/bulk",  async(req, res) => {
+router.get("/bulk", authMiddleware, async(req, res) => {
     const filter = req.query.filter || "";  
 
     const products = await Product.find({
@@ -40,7 +40,7 @@ router.get("/bulk",  async(req, res) => {
 })
 
 // get all product which are from same category frm db
-router.get("/categorie",  async(req, res) => {
+router.get("/categorie", authMiddleware, async(req, res) => {
     const categoryName = req.body.categoryName
 
     const category = await Category.findOne({ categoryName: categoryName })
@@ -66,7 +66,7 @@ router.get("/categorie",  async(req, res) => {
 })
 
 //add a prduct in db
-router.post("/add",  async(req, res) => {
+router.post("/add", adminMiddleware, async(req, res) => {
     try{    const body = req.body;
         const {success} = productSchema.safeParse(req.body)
         if(!success) {
@@ -120,7 +120,7 @@ router.post("/add",  async(req, res) => {
     })
 
 //to get a particular prd acc to id from db
-router.get("/:id",  async(req, res) => {
+router.get("/:id", authMiddleware, async(req, res) => {
     const productId = req.params.id
     const product = await Product.findOne({
         _id: productId
@@ -130,7 +130,7 @@ router.get("/:id",  async(req, res) => {
 
 
 //update a product in db by id
-router.put("/add/:id", async(req, res) => {
+router.put("/add/:id",adminMiddleware, async(req, res) => {
     const productId = req.params.id
     console.log(productId)
     const product = await Product.updateOne( {
