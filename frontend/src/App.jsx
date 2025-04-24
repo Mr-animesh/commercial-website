@@ -1,5 +1,12 @@
 import { useState } from 'react'
-
+import {Me} from './pages/Me'
+import {Signup} from './pages/Signup'
+import {Signin} from './pages/Signin'
+import {Home} from './pages/Home'
+import {Product} from './pages/Product'
+import {Cart} from './pages/Cart'
+import {Status} from './pages/Status'
+import {Order} from './pages/Order'
 import './App.css'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 
@@ -13,7 +20,7 @@ function App() {
           <Route path="/signup" element= {<Signup />} />
           <Route path="/signin" element= {<Signin />} />
           <Route path= "/home" element= {<Home />} />
-          <Rotue path= "/product" element= {<Product />} />
+          <Route path= "/product" element= {<Product />} />
           <Route path= "/order" element= {<Order />} />
           <Route path= "/status" element= {<Status />} />
           <Route path= "/cart" element= {<Cart />} />
