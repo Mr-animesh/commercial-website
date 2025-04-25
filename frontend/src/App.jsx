@@ -3,7 +3,7 @@ import {Me} from './pages/Me'
 import {Signup} from './pages/Signup'
 import {Signin} from './pages/Signin'
 import {Home} from './pages/Home'
-import {Product} from './pages/Product'
+import {ProductInfo} from './pages/ProductInfo'
 import {Cart} from './pages/Cart'
 import {Status} from './pages/Status'
 import {Order} from './pages/Order'
@@ -20,7 +20,7 @@ function App() {
           <Route path="/signup" element= {<Signup />} />
           <Route path="/signin" element= {<Signin />} />
           <Route path= "/home" element= {<Home />} />
-          <Route path= "/product" element= {<Product />} />
+          <Route path= "/info" element= {<ProductInfo />} />
           <Route path= "/order" element= {<Order />} />
           <Route path= "/status" element= {<Status />} />
           <Route path= "/cart" element= {<Cart />} />
