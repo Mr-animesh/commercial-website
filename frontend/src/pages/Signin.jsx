@@ -19,7 +19,7 @@ export const Signin = () => {
 				<Heading label={"Sign in"} />
 				<SubHeading label={"Enter your credentials to acces your account"} />
 				<InputBox onChange={e => {setUsername(e.target.value)}} placeholder="gmail.com" label={"email"} />
-				<InputBox onChange={e => {setPassword(e.target.value)}} placeholder="gmail.com" label={"email"} />
+				<InputBox onChange={e => {setPassword(e.target.value)}} placeholder="123456" label={"password"} />
 				<div className="pt-4">
 					<Button onPress={async() => {
 						const response = await axios.post("http://localhost:3000/api/v1/user/signin",{
@@ -27,10 +27,10 @@ export const Signin = () => {
 							password
 						})
 						localStorage.setItem("token", response.data.token)
-						navigate('/dashboard')
+						navigate('/home')
 					}} label={"Sign in"} />
 				</div>
-				<BottomWarning label={"Don't have an account? "} buttonText={"Sign in"} to= {"/signin"} />
+				<BottomWarning label={"Don't have an account? "} buttonText={"Sign up"} to= {"/signup"} />
 			</div>
 		</div>
 	</div>

@@ -13,7 +13,7 @@ export const Signup = () => {
     const [lastName, setLastName] = useState("")
     const [username, setUsername] = useState("")
     const [password, setPassword] = useState("")
-    let isAdmin = false
+    const [isAdmin, setIsAdmin] = useState(false)
     return <div className="bg-slate-300 h-screen flex justify-center">
     <div className="flex flex-col justify-center">
     <div className="rounded-lg bg-white w-80 text-center p-2 h-max px-4">
@@ -34,7 +34,7 @@ export const Signup = () => {
                 isAdmin
             });
             localStorage.setItem("token", response.data.token)
-            navigate("/dashboard");
+            navigate("/home");
         }} label={"Sign up"} />
         </div>
         <BottomWarning label={"Already have an account?"} buttonText={"Sign in"} to={"/signin"} />

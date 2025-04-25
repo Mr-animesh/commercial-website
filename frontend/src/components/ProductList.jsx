@@ -2,7 +2,7 @@ import { useEffect, useState} from "react"
 import { Button } from "./Button"
 import axios from "axios";
 import {useNavigate} from  "react-router-dom"
-export const Products =() => {
+export const ProductList =() => {
     const [products, setProducts] = useState([]);
     const [filter, setFilter] = useState("");
     useEffect(() => {
@@ -51,7 +51,7 @@ function Product({product}) {
         </div>
         <div className="">
             <Button onPress={(e)=> {
-                navigate("/place?productId=" + product._id + "&name="+ product.productName)
+                navigate("/info?productId=" + product._id + "&name="+ product.productName)
             }} label={"Buy Product"} />
         </div>
     </div>
