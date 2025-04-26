@@ -8,7 +8,7 @@ export const ProductList =() => {
     useEffect(() => {
         axios.get("http://localhost:3000/api/v1/product/bulk?filter=" + filter , {
             headers: {
-                Authorization: "Bearer" + localStorage.getItem("token")
+                Authorization: "Bearer " + localStorage.getItem("token")
             }
         })
         .then(res => {
@@ -44,7 +44,7 @@ function Product({product}) {
             <div className="">
                 <div>
                     {product.price}
-                    {product.stock}
+                    <div>{product.stock}</div>
                 </div>
                 {product.booked}
             </div>
