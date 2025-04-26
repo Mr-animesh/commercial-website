@@ -141,4 +141,17 @@ router.get("/bulk",adminMiddleware, async(req, res) => {
     })
 })
 
+router.get("/me", authMiddleware, async(req, res) => {
+    const user = await User.findOne({
+        _id: req.userId
+    })
+    res.json({
+        username: user.username,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        _id: user._id,
+        balance: user.balance,
+        isAdmin: user.isAdmin
+    })
+})
 module.exports = router;

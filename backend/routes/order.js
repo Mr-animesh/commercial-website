@@ -42,13 +42,10 @@ router.post("/place/:productId",authMiddleware,  async(req, res) => {
 
     const dbOrder = await Order.create({
         userId: userId,
-        productId: productId,
-        status: status
+        productId: productId
     })
     res.json({
-        userId,
-        productId,
-        status
+        order: dbOrder
     })
 })
 
